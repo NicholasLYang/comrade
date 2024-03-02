@@ -11,26 +11,37 @@ datasource db {
 }
 
 model Chat {
-  id       Int      @id @default(autoincrement())
+  id         Int          @id @default(autoincrement())
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  docId      String       @unique
+  members Membership[]
+}
+
+model Membership {
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  docId    String
+  userId    String
+  chatId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  chat      Chat     @relation(fields: [chatId], references: [id])
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?
   refresh_token_expires_in Int
-  access_token       String?
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?
-  session_state      String?
+  access_token             String?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -53,6 +64,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+
+  chats Membership[]
 }
 
 model VerificationToken {
