@@ -15,6 +15,7 @@ model Chat {
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   docId      String       @unique
+  name       String       @default("New Chat")
   members Membership[]
 }
 

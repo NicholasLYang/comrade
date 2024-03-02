@@ -1,16 +1,15 @@
 import { YDocProvider } from "@y-sweet/react";
 import { getOrCreateDocAndToken } from "@y-sweet/sdk";
 import { Grid } from "@/app/chat/Grid";
-import { getServerSession, Session } from "next-auth";
+import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { redirect } from "next/navigation";
-import { PrismaClient, User } from "@prisma/client";
+import { User } from "@prisma/client";
+import { prisma } from "@/app/prisma";
 
 type ChatProps = {
   searchParams: Record<string, string>;
 };
-
-const prisma = new PrismaClient();
 
 async function validateChat(id: string, user: User) {
   const chat = await prisma.chat.findUnique({
@@ -57,7 +56,7 @@ export default async function Chat({ searchParams }: ChatProps) {
 
   // If we don't have an id, then we need to create this chat in the database
   if (!searchParams.id) {
-    await prisma.chat.create({
+    const result = await prisma.chat.create({
       data: {
         docId: clientToken.docId,
         members: {
@@ -65,6 +64,7 @@ export default async function Chat({ searchParams }: ChatProps) {
         },
       },
     });
+    console.log(result);
   }
 
   return (
