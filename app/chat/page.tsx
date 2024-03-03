@@ -42,6 +42,7 @@ export default async function Chat({ searchParams }: ChatProps) {
     throw new Error("internal error: user should exist");
   }
 
+  const hasId = Boolean(searchParams.id);
   if (searchParams.id) {
     const message = await validateChat(searchParams.id, user);
     if (message) {
@@ -51,11 +52,11 @@ export default async function Chat({ searchParams }: ChatProps) {
 
   const clientToken = await getOrCreateDocAndToken(
     process.env.CONNECTION_STRING!,
-    searchParams.doc,
+    searchParams.id,
   );
 
   // If we don't have an id, then we need to create this chat in the database
-  if (!searchParams.id) {
+  if (!hasId) {
     const result = await prisma.chat.create({
       data: {
         docId: clientToken.docId,
